@@ -836,3 +836,58 @@ function XxxClient.GetConfig() return PlayerStore.Get("xxxConfig") or {} end
 
 return XxxClient
 ```
+
+---
+
+## 10. GateManager 门控与操作队列
+
+### 操作队列（OpQueue）
+
+每个玩家一个操作队列，handler 自动入队，同一玩家的请求按顺序串行。
+
+- handler 签名：`function(uid, eventData, done)`
+- **每个执行路径末尾必须调用 `done()`**（含错误分支和异步回调的 ok/error）
+- 忘记 `done()` → 该玩家操作队列**永久阻塞**
+
+### GateManager 门控
+
+为每个玩家维护命名门控锁，防止同一玩家同一资源的并发异步操作。
+
+| 决策 | 选择 |
+|------|------|
+| 纯同步操作 | `Server.On` — 操作队列已保证串行 |
+| 含异步回调（serverCloud/money） | `Server.OnGated` — 防回调期间同类请求并发 |
+
+```lua
+-- 纯同步 handler（操作队列保证串行）
+server.On(NetworkEvents.REQUEST_XXX, function(uid, eventData, done)
+    local data = XxxService.GetAll(uid)
+    -- 业务校验...
+    XxxService.SaveAll(uid, data)
+    Server_.SendToClient(uid, EVT, { Ok = true })
+    done()  -- 必须调用！
+end)
+
+-- 含异步操作的 handler（GateManager 防并发）
+server.OnGated(NetworkEvents.REQUEST_BUY, "shop",
+    NetworkEvents.BUY_RESULT, function(uid, eventData, done)
+        PDM.AddMoney(uid, "gold", -cost, {
+            ok = function()
+                XxxService.AddItem(uid, item)
+                done()  -- 异步回调中也必须 done()
+            end,
+            error = function(err)
+                Server_.SendToClient(uid, EVT, { Ok = false, err = err })
+                done()  -- 错误分支也必须 done()
+            end,
+        })
+    end)
+```
+
+### Handler `done()` 检查清单
+
+- [ ] 正常返回路径有 `done()`
+- [ ] 每个 `return SendFail(...)` 前/后有 `done()`
+- [ ] 异步回调的 ok 分支有 `done()`
+- [ ] 异步回调的 error 分支有 `done()`
+- [ ] 条件分支不存在漏掉 `done()` 的路径
