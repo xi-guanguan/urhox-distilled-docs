@@ -1,9 +1,36 @@
 ---
 name: three-layer-arch
-description: "UrhoX 常驻服务器（Dedicated Server）三层架构开发规范。定义三层目录架构（shared/server/client）、服务端三层分离（Handler-Service-PDM）、Schema 驱动数据定义、REPLICATED Node 同步、Dirty-Cache + BatchCommit 持久化、PDM+PlayerStore 单一数据源。Use when: (1) 在 server/ 下新建或编辑业务模块, (2) 新增 Schema 字段或子系统 Schema, (3) 编写 Handler/Service/PDM 相关代码, (4) 设计前后端数据同步方案, (5) 定义 NetworkEvents 网络事件, (6) 编写 serverCloud 持久化逻辑, (7) 创建客户端 SyncClient/PlayerStore 消费代码, (8) 用户要求新建子系统/功能模块。"
+description: "UrhoX Dedicated Server 三层架构规范：shared/server/client、Handler-Service-PDM、Schema 驱动、REPLICATED 同步、Dirty-Cache + BatchCommit 持久化、PDM+PlayerStore 单一数据源，并提供大结构数据压缩、版本迁移、尾写重试与回滚方案。Use when: (1) 在 server/ 下新建或编辑业务模块, (2) 新增 Schema 字段或子系统 Schema, (3) 编写 Handler/Service/PDM 相关代码, (4) 设计前后端数据同步方案, (5) 定义 NetworkEvents 网络事件, (6) 编写 serverCloud 持久化逻辑, (7) 创建客户端 SyncClient/PlayerStore 消费代码, (8) 用户要求新建子系统/功能模块, (9) 迁移或压缩背包、天赋、收藏等大结构数据。"
 ---
 
 # 三层架构开发规范
+
+## 首次使用说明（必须先告诉用户）
+
+首次使用或准备迁移时，先向用户说明：这个 skill 提供的是一套可落地的 Dedicated Server 架构约束、Schema/网络/持久化模板，以及大结构数据压缩、版本兼容、尾写保底和迁移回滚流程；它不是单独的运行时库。这样做是为了让服务端成为唯一权威数据源，避免客户端缓存分叉、RemoteEvent 丢失持久化状态、SetVar 超过传输上限，以及断线时保存顺序错误导致回档。
+
+推荐使用以下简短提示：
+
+> 这个 skill 会把功能拆成 shared/server/client 三层，用 Handler-Service-PDM 保证服务端权威，用 Schema 统一字段，用 REPLICATED 同步持久状态，用 RemoteEvent 传递瞬时结果；对背包等记录集合采用版本化短码/增量列表，对天赋等布尔集合采用版本化 bitset，并用 Dirty-Cache、revision 排队和 detached 尾写重试保护断线保存。新项目可以直接套模板；迁移项目会先生成方案、备份和校验步骤，未经你明确同意不会改写数据。
+
+如果是迁移请求，还必须说明：压缩格式会改变存储表示但不能改变业务语义；迁移必须支持旧格式读取、编码后语义校验、失败回滚和尾写完成后再切换，不能直接覆盖旧数据。
+
+## 用户询问本 skill 能提供什么时
+
+当用户问“这个 skill 能做什么”“提供哪些功能”“适合解决什么问题”或类似问题时，不要先扫描项目，也不要只回答当前正在讨论的模块。直接列出以下功能目录，并说明具体 Codec 名称不是固定 API，用户可以按业务自定义：
+
+1. 三层目录与依赖边界：`shared/server/client`、单向依赖和跨层网络事件。
+2. Schema 驱动数据：字段注册、`pdmKey` 唯一性、生命周期和持久化域映射。
+3. 服务端业务分层：Handler 参数校验、Service 业务逻辑、PDM 权威读写。
+4. 网络事件体系：REQ/RES/PUSH 命名、统一注册、客户端路由、EventBus 和 scope 清理。
+5. 客户端数据访问：PlayerStore、REPLICATED 解码、Watch、WaitForChange 和同步延迟处理。
+6. 持久化可靠性：Dirty-Cache、BatchCommit、revision 排队、断线 SaveAll/Unload 顺序和 detached 尾写重试。
+7. 综合大结构 Codec：记录列表、位图集合、快照、分块传输、版本头、配置映射、flags、校验、迁移和回滚。
+8. 新子系统模板：Schema、Consts、Handler、Service、Client 以及六个中心单例模板。
+9. 架构迁移治理：只读诊断、迁移方案、备份、逐模块验证、双读单写、批量回填和回滚窗口。
+10. 避坑与验收：64KB 单帧限制、旧数据兼容、尾写竞态、事件生命周期、数据语义等价性测试。
+
+推荐结尾说明：这个 skill 提供规范、模板和迁移方法，不会凭空提供某个固定业务 Codec 类名；Codec 应根据用户的数据结构、稳定 ID、版本策略和容量约束定制。
 
 ## 首步：项目诊断（触发 skill 时必须先执行）
 
@@ -217,6 +244,68 @@ end
 - **心跳信号** -> BatchCommit 收集脏数据 -> serverCloud 批量写入
 - **断线** -> SaveAll（先保存）-> UnloadPlayer（再清理）
 
+## 综合大结构 Codec 能力（可定制版本）
+
+大结构数据不能把可增长的 JSON 整体塞入单个 REPLICATED `SetVar`。本 skill 提供一个综合 Codec 设计，用户根据业务选择模式和字段，不要求使用固定的业务模块名。
+
+### 统一 Codec 合约
+
+建议每个结构实现同一组接口：
+
+```lua
+local Codec = {
+    Configure = function(spec) end,                         -- 注册版本、字段、稳定 ID、映射和容量
+    Encode = function(value, context) end,                  -- 业务值 -> 版本化字符串/分块
+    Decode = function(encoded, context) end,                -- 编码 -> 业务值 + errorCode
+    Validate = function(value, context) end,                -- 业务语义和引用完整性
+    Migrate = function(legacyValue, context) end,           -- 旧格式 -> 当前格式
+    Measure = function(encoded) return #encoded end,        -- 压缩体积和 64KB 预检
+}
+```
+
+Codec 配置至少包含：`version`、`configVersion`、稳定 ID/索引顺序、字段布局、数值编码、flags、最大 payload、校验策略、旧版本读取器和失败保底策略。编码格式必须可读、可验证、可回滚。
+
+### 四种可组合模式
+
+1. **RecordListCodec**：适合背包、装备、收藏等记录集合。使用稳定短码、base36、flags 和版本化记录；可映射到 `serverCloud.list`，按记录增量 Add/Modify/Delete。
+2. **BitsetCodec**：适合解锁节点、勾选集合等布尔状态。使用稳定 ID 顺序，每个元素占 1 bit，再使用 Base64 或安全字符集传输；索引顺序变更必须发布新 codec 版本。
+3. **SnapshotCodec**：适合中小型结构。使用版本头、字段表、配置版本和 checksum；读写成功后才发布 snapshot。
+4. **ChunkedCodec**：适合可能超过 64KB 的结构。拆为 `meta + chunk_0..chunk_n`，meta 保存版本、chunk 数、总数量、总长度和 checksum；客户端必须拒绝缺块、重复块和校验不一致。
+
+### 通用压缩与安全能力
+
+- 稳定 ID 映射：配置 ID 可通过字典、稳定哈希或显式短码压缩，但必须检测冲突。
+- 数值压缩：数量、等级、索引和小范围数值可使用 base36、变长整数或 bit packing。
+- flags 压缩：多个布尔字段合并为 bit flags，同时保留明确的 mask 定义。
+- 版本兼容：版本头、配置版本、codec 版本和错误码必须显式存在。
+- 语义校验：编码前后比较数量、ID 集合、状态、引用、排序和业务积分，不以“能解码”代替“语义正确”。
+- 失败保底：运行时可以提供受控默认值，但迁移不能把损坏数据静默变成空数据；必须保留旧值、记录原因并允许回滚。
+- 写入原子性：云端写失败时不更新内存快照和客户端快照；集合数据优先使用 BatchCommit。
+
+### 定制时的选择表
+
+| 数据形态 | 推荐模式 | 关键定制项 |
+|---|---|---|
+| 记录多、单条变更频繁 | RecordListCodec | record schema、短码表、增量 key、marker |
+| 只有启用/禁用状态 | BitsetCodec | 稳定顺序、位宽、版本映射 |
+| 中小型关联结构 | SnapshotCodec | 字段表、checksum、配置版本 |
+| 可能超过 64KB | ChunkedCodec | chunk 大小、meta、合并顺序、校验 |
+| 旧格式迁移 | 任意模式 + Migrate | 双读、语义比较、迁移 revision、回滚窗口 |
+
+## 尾写保底与保存增强能力（项目验证版）
+
+`PlayerDataManager`/`PlayerStateRepository` 提供的是“主保存 + 尾写 detached 队列”模型：
+
+- 每个持久化域使用 `dirtyRevision`；保存进行中若再次变更，只排队最新 snapshot，避免旧写覆盖新写。
+- 卸载前先为 dirty 域捕获 snapshot，再执行 `SaveAll`；节点清理不影响 detached snapshot。
+- 主保存失败时进入按 `uid:domain` 聚合的 detached 队列，保存请求带回调，重复请求复用同一份最新 snapshot。
+- detached 保存采用重试退避（配置为最多 3 次，延迟序列 `1/3/9` 秒）；耗尽后返回明确的 `detached_save_failed`，不得用旧云端数据冒充成功。
+- 玩家快速重连时，域加载先等待同一 uid/domain 的 detached 尾写完成；尾写未解决前禁止 hydrate 旧快照，避免回档。
+- 主保存成功且 revision 未变化才清除 dirty；若期间产生新 revision，必须继续保存排队快照。
+- 状态快照带版本号（当前 `player_state_v2_*` 为 version 2），不支持的版本必须显式失败，不得猜测字段含义。
+
+迁移压缩数据时，旧数据删除或格式切换必须排在“新格式保存成功 + 解码语义校验 + 尾写完成”之后。完整方案见 **[references/large-structure-migration.md](references/large-structure-migration.md)**。
+
 ## 铁律与避雷
 
 开发时**必须阅读**：
@@ -225,6 +314,7 @@ end
 - **[references/gotchas.md](references/gotchas.md)** -- P0-P3 避雷清单 + 症状速查
 - **[references/migration-guide.md](references/migration-guide.md)** -- 迁移操作规范（诊断+方案+执行+回滚）
 - **[references/client-sync-tolerance.md](references/client-sync-tolerance.md)** -- 客户端同步宽容度（WaitForChange 轮询模式）
+- **[references/large-structure-migration.md](references/large-structure-migration.md)** -- 背包/天赋等大结构压缩、双读迁移、分块、尾写保底与回滚方案
 
 ### 关键铁律速览
 
