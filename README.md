@@ -14,11 +14,11 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | `04-3d-graphics/` | CustomGeometry、模型导入 (GLB/FBX)、PBR 材质、场景优化 | 13 |
 | `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、安全区、UI 组件开发 | 23 |
 | `06-gameplay-systems/` | 广告变现设计、SDK 防护、监控系统 | 5 |
-| `07-game-design/` | GDD 工作流、数值平衡 (蒙特卡洛)、品质评估、设计原理框架、创意方法 | 8 |
+| `07-game-design/` | GDD 工作流、难度与心流、经济系统、关卡设计、数值设计、增量游戏、品质评估与创意方法 | 14 |
 | `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入 | 37 |
 | `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、发布流程 | 14 |
 
-**总计 171 篇**（不含本 README）。
+**总计 179 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
 
 ## 文档来源
 
