@@ -15,10 +15,10 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、安全区、UI 组件开发 | 23 |
 | `06-gameplay-systems/` | 广告变现设计、SDK 防护、监控系统 | 5 |
 | `07-game-design/` | GDD 工作流、难度与心流、经济系统、关卡设计、数值设计、增量游戏、品质评估与创意方法 | 14 |
-| `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入 | 37 |
+| `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入 | 38 |
 | `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、发布流程 | 14 |
 
-**总计 181 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
+**总计 182 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
 
 ## 文档来源
 
@@ -43,7 +43,7 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | Spine 骨骼动画 | 3 | 不同版本运行时的适配策略 |
 | UI 响应式布局 | 4 | Yoga/NanoVG/UIScaler 三种方案对比 |
 | AI Skill 管理 | 5 | 从单 Skill 到多 Skill 协作的演进 |
-| 记忆系统 | 3 | 跨会话持久化的不同实现思路 |
+| 记忆系统 | 4 | 文件化记忆、跨项目随行记忆与向量记忆等不同实现思路 |
 | LLM 游戏接入 | 3 | 双模型架构、成本控制、角色控制 |
 
 ## 命名规范
