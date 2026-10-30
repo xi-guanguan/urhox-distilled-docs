@@ -1,0 +1,4 @@
+interface:
+  display_name: "TapTap 全品类物料生成"
+  short_description: "使用 Maker MCP 或官网，为任意游戏制作和验收完整宣发物料"
+  default_prompt: "使用 $taptap-material-production，为当前游戏制作一套 TapTap 物料；创意生成仅使用 Maker MCP 或 Maker 官网，先核对发布字段、素材来源和预算。"

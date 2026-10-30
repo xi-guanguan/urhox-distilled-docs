@@ -15,12 +15,14 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、平台检测、安全区、UI 组件开发 | 24 |
 | `06-gameplay-systems/` | 广告变现设计、SDK 防护、监控系统 | 5 |
 | `07-game-design/` | GDD 工作流、难度与心流、经济系统、关卡设计、数值设计、增量游戏、品质评估与创意方法 | 14 |
-| `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入 | 38 |
+| `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入、Maker物料生成 | 39 |
 | `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、发布流程 | 14 |
 
-**总计 183 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
+**总计 184 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
 
 ## 实战方法论
+
+- [xi-guanguan：TapTap全品类物料生成Skill](08-ai-workflow/xi-guanguan-TapTap全品类物料生成Skill.md) — 仅用Maker MCP/官网完成创意生成，覆盖图片、截图包装、视频、音频、文案、可选3D和交付；含单页完整学习版及配套Skill（L2）
 
 - [节拍前夜：移动平台检测与响应式适配方法论](05-ui-and-interaction/节拍前夜-移动平台检测与响应式适配方法论.md) — 平台身份、布局模式、输入能力分离，含缓存生命周期与实机验证矩阵（L2）
 
