@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maker生图加载界面"
+  short_description: "结合Maker生图、参考改图和真实加载流程，制作游戏加载界面"
+  default_prompt: "使用 $game-loading-art-pipeline，根据当前项目事实完成本次授权范围内的设计、实现或验证；保留必要的本人确认停点。"

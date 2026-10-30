@@ -1,0 +1,4 @@
+interface:
+  display_name: "长线经营加速模拟"
+  short_description: "用独立业务时钟、真实规则和可追溯日志验证长线经营游戏"
+  default_prompt: "使用 $long-run-game-simulation，根据当前项目事实完成本次授权范围内的设计、实现或验证；保留必要的本人确认停点。"

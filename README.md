@@ -12,19 +12,30 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | `02-cloud-and-storage/` | 云存档 (clientCloud/serverCloud)、排行榜、防篡改、数据迁移、冲突分级 | 14 |
 | `03-2d-graphics/` | 精灵动画、骨骼动画 (Spine/DragonBones)、瓦片地图、2D 光照、序列帧管线、sprite-gen MCP 四层分工 | 40 |
 | `04-3d-graphics/` | CustomGeometry、模型导入 (GLB/FBX)、PBR 材质、场景优化 | 13 |
-| `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、平台检测、安全区、UI 组件开发 | 24 |
+| `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、平台检测、安全区、UI 组件开发、Maker生图加载页 | 25 |
 | `06-gameplay-systems/` | 广告变现设计、SDK 防护、监控系统 | 5 |
 | `07-game-design/` | GDD 工作流、难度与心流、经济系统、关卡设计、数值设计、增量游戏、品质评估与创意方法 | 14 |
 | `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入、Maker物料生成 | 39 |
-| `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、发布流程 | 14 |
+| `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、长线模拟、验收集成、H5交付 | 17 |
 
-**总计 184 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
+**总计 188 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
 
 ## 实战方法论
 
 - [xi-guanguan：TapTap全品类物料生成Skill](08-ai-workflow/xi-guanguan-TapTap全品类物料生成Skill.md) — 仅用Maker MCP/官网完成创意生成，覆盖图片、截图包装、视频、音频、文案、可选3D和交付；含单页完整学习版及配套Skill（L2）
 
 - [节拍前夜：移动平台检测与响应式适配方法论](05-ui-and-interaction/节拍前夜-移动平台检测与响应式适配方法论.md) — 平台身份、布局模式、输入能力分离，含缓存生命周期与实机验证矩阵（L2）
+
+## 游戏开发实战 Skill
+
+以下四篇均有单页完整学习版和配套可安装Skill，供网页助手或本地Agent按需使用（L2）：
+
+- [Maker生图加载界面设计与落地](05-ui-and-interaction/xi-guanguan-Maker生图加载界面设计与落地Skill.md) — 参考驱动生图、完整概念、独立组件、真实进度与多尺寸接入
+- [长线经营加速模拟与进度验证](09-engineering/xi-guanguan-长线经营加速模拟Skill.md) — 独立业务时钟、CPU背压、正常规则策略、预算、日志与复现
+- [游戏验收页面与真实游戏集成](09-engineering/xi-guanguan-游戏验收页面集成Skill.md) — 受限桥接、测试档隔离、构建身份、证据分层与玩家包剔除
+- [TapTap H5打包、SDK与CLI交付](09-engineering/xi-guanguan-TapTap-H5打包与SDK-CLI交付Skill.md) — 构建/资源审计、宿主异步恢复、精确包体上传、测试码与发布停点
+
+配套分文件不重复计入主体篇数。制作物料另见[TapTap全品类物料生成Skill](08-ai-workflow/xi-guanguan-TapTap全品类物料生成Skill.md)。
 
 ## 文档来源
 

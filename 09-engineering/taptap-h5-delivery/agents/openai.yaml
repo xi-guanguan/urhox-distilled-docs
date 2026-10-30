@@ -1,0 +1,4 @@
+interface:
+  display_name: "TapTap H5交付"
+  short_description: "核对H5包体、宿主SDK和TapTap CLI，分阶段验证与交付"
+  default_prompt: "使用 $taptap-h5-delivery，根据当前项目事实完成本次授权范围内的设计、实现或验证；保留必要的本人确认停点。"
