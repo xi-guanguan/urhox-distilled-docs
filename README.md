@@ -9,7 +9,7 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | 目录 | 内容 | 篇数 |
 |------|------|------|
 | `01-multiplayer/` | 服务器架构、联机通信、房间匹配、数据同步 | 18 |
-| `02-cloud-and-storage/` | 云存档 (clientCloud/serverCloud)、排行榜、防篡改、数据迁移、冲突分级 | 14 |
+| `02-cloud-and-storage/` | 云存档 (clientCloud/serverCloud)、排行榜、防篡改、数据迁移、冲突分级、未知写恢复 | 15 |
 | `03-2d-graphics/` | 精灵动画、骨骼动画 (Spine/DragonBones)、瓦片地图、2D 光照、序列帧管线、sprite-gen MCP 四层分工 | 40 |
 | `04-3d-graphics/` | CustomGeometry、模型导入 (GLB/FBX)、PBR 材质、场景优化 | 13 |
 | `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、平台检测、安全区、UI 组件开发、Maker生图加载页 | 25 |
@@ -18,9 +18,11 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入、Maker物料生成 | 39 |
 | `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、长线模拟、验收集成、H5交付 | 17 |
 
-**总计 188 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
+**总计 189 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
 
 ## 实战方法论
+
+- [未标注：TapTap 单机客户端云存档修复与迁移指南](02-cloud-and-storage/未标注-TapTap单机客户端云存档修复与迁移指南.md) — 身份与昵称隔离、异步深快照、未知写恢复、两银行 journal 与真实验收边界（L2）
 
 - [xi-guanguan：TapTap全品类物料生成Skill](08-ai-workflow/xi-guanguan-TapTap全品类物料生成Skill.md) — 仅用Maker MCP/官网完成创意生成，覆盖图片、截图包装、视频、音频、文案、可选3D和交付；含单页完整学习版及配套Skill（L2）
 
@@ -54,7 +56,7 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 
 | 主题 | 相关文档数 | 说明 |
 |------|-----------|------|
-| 云存档系统设计 | 5 | clientCloud/serverCloud 不同实现策略，含本地/云端冲突分级 |
+| 云存档系统设计 | 6 | clientCloud/serverCloud 不同实现策略，含本地/云端冲突分级与未知写恢复 |
 | 多人联机架构 | 5 | 从 2 人到 100 人不同规模的技术选型 |
 | 2D 瓦片地图 | 6 | 有限/无限地图、等距/正交、自动图块等变体 |
 | Spine 骨骼动画 | 3 | 不同版本运行时的适配策略 |
