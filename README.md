@@ -13,14 +13,16 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 | `03-2d-graphics/` | 精灵动画、骨骼动画 (Spine/DragonBones)、瓦片地图、2D 光照、序列帧管线、sprite-gen MCP 四层分工 | 40 |
 | `04-3d-graphics/` | CustomGeometry、模型导入 (GLB/FBX)、PBR 材质、场景优化 | 13 |
 | `05-ui-and-interaction/` | Yoga Flexbox 布局、NanoVG 渲染、响应式适配、平台检测、安全区、UI 组件开发、Maker生图加载页 | 25 |
-| `06-gameplay-systems/` | 广告变现设计、SDK 防护、监控系统 | 5 |
+| `06-gameplay-systems/` | 广告变现设计、SDK 防护、异常恢复、统计口径与监控系统 | 6 |
 | `07-game-design/` | GDD 工作流、难度与心流、经济系统、关卡设计、数值设计、增量游戏、品质评估与创意方法 | 14 |
 | `08-ai-workflow/` | Skill 体系、记忆系统、Prompt 工程、成本优化、语音设计、LLM 接入、Maker物料生成 | 39 |
 | `09-engineering/` | 性能优化、Bug 排查、热更新、事件陷阱、长线模拟、验收集成、H5交付 | 17 |
 
-**总计 189 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
+**总计 190 篇**（不含本 README；ZIP 包及旁注登记不计入主体篇数）。
 
 ## 实战方法论
+
+- [未标注：激励视频广告异常恢复与埋点口径指南](06-gameplay-systems/未标注-激励视频广告异常恢复与埋点口径指南.md) — 请求受理、焦点与超时恢复、尽力补发、正常成功/免费/补偿分流、GM 身份与统计口径（L2）
 
 - [未标注：TapTap 单机客户端云存档修复与迁移指南](02-cloud-and-storage/未标注-TapTap单机客户端云存档修复与迁移指南.md) — 身份与昵称隔离、异步深快照、未知写恢复、两银行 journal 与真实验收边界（L2）
 
