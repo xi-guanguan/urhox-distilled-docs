@@ -2,7 +2,7 @@
 
 ## 1. 事实源与适用范围
 
-核对日期：**2026-10-31（Asia/Shanghai）**。规格是查询快照，不是永久规则。
+核对日期：**2026-11-16（Asia/Shanghai）**。规格是查询快照，不是永久规则。本轮直接核对两个官方页面HTML正文；网页提取器摘要曾把通用商店壁纸/视频规格错记为1920×1080/500MB，未采用该摘要覆盖正文。
 
 - TapTap 小游戏专项：[宣发物料指引](https://developer.taptap.cn/minigameapidoc/quick-start/guide/game-publish/material/)。
 - TapTap 通用商店：[游戏物料要求 v4](https://developer.taptap.cn/docs/store/release/publish/material/)。
@@ -51,7 +51,17 @@
 
 实际项目可采用“前 3 秒入玩法、60–120 秒演示”等更严格制作目标；这是体验策略/用户需求，不是把官方前 5 秒规则改写了。
 
-## 5. 通用需求卡
+## 5. 本轮规格冲突的核验记录
+
+2026-11-16直接读取官方正文，而非搜索摘要：
+- 通用页§2.4：“尺寸：3840 x 1240px”“图片大小：10 MB 以内”；适用于PC游戏库背景壁纸。
+- 通用页§4.1、§5.3的实机与宣传片均为“大小：5 GB 以内”；小游戏专项表的实机为“500MB以内”。两者不混用。
+- 通用页§5.1/§5.2的横方宣传图均为“图片大小：4 MB 以内”；小游戏专项均为“2MB以内”。
+- 通用页§4.2：“单张截图不得超过4 MB”，1MB是加载体验建议；小游戏专项截图为“单张2MB以内”。
+
+本轮未登录开发者中心核验控件/后端实际限制，没有上传或测试审核。执行具体项目时仍核对目标字段；遇冲突保留页面证据，不擅自套用更宽上限。页面没写的规则标未核验，不让提取器按常识补齐。
+
+## 6. 通用需求卡
 
 用已有信息填，不把每个空项变成问卷：
 
@@ -74,7 +84,9 @@ maker:
   channel: mcp / website
   verified_account: 已确认账号，不填凭证
   project: 实际接收项目，不照抄示例项目
-  target_dir: MCP 时填写唯一绝对项目根
+  target_dir_if_supported: 仅当前MCP字段存在时填写唯一已核验绝对根
+  local_creative_post: 未授权 / 本次明确授权的步骤及范围
+  capture_isolation: 无需采集 / 已证明隔离 / 未证明不启动
   budget: 用户已批准的普通额度与额外确认门槛
 stop_at: candidate_delivery / draft_upload / review_check / explicit_submission
 ```

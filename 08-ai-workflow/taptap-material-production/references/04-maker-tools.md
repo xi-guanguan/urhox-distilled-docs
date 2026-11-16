@@ -1,6 +1,8 @@
 # Maker 工具手册
 
-以下基于本次可见 MCP schema（运行时包 0.0.38，2026-10-31）。工具名和字段以实际会话为准；更新提示不授权自动升级。没有暴露的工具不得靠猜 API 或直接付费供应商绕过。
+以下保留2026-10-31运行时包0.0.38的适用经验，并于2026-11-16对照本会话工具schema更新。不同部署不一定暴露相同工具/字段，版本号不代表必须安装该版。工具名和字段以实际会话为准；更新提示不授权自动升级。没有暴露的工具不得靠猜API或直接付费供应商绕过。
+
+先做能力检查：状态资源/工具存在才调用；`target_dir`仅在当前工具支持时传入，不支持时使用可信项目绑定。以下JSON是核心字段模板，提交前按当前schema补齐真正必填项并移除不支持的字段，不是可跨环境原样发送的请求。
 
 ## 1. 操作路由
 
@@ -18,13 +20,15 @@
 | 声音确认 | `confirm_character_voice` | 本人明确选择后调用，占永久 Voice Slot |
 | 最终台词 | `text_to_dialogue` | 已有确认映射；角色名与台词，不乱填 voice ID |
 | 3D 生命周期 | `create_3d_asset` | start/query/get_options/continue/post_process；reviewed 需人工审核 |
-| UrhoX 元数据 | `generate_resource_meta` | 确实供 UrhoX 使用时显式调用；不是其他引擎/宣发文件的前置步骤 |
+| UrhoX 元数据 | 当前会话确实暴露的官方元数据工具 | 名称如 `generate_resource_meta` 仅在存在时使用；不是其他引擎/宣发的前置步骤 |
+| 发布资料草稿 | `update_publish_info`（如可用） | 只传变化字段，截图完整列表，保存不等于提审 |
+| 单项上传 | `upload_game_material`（如可用） | 可能只记录本地pending；screenshot_index仅截图可用 |
 
 构建、扫码、反馈和广告不是素材生成工具的隐含前提：不因物料需求自动调用 `maker_build_current_directory`、`generate_test_qrcode` 或 `get_ad_config`。如用户另要求扫码/构建等，按其实际规则处理。调研玩家反馈时优先只读 `get_debug_feedbacks(fetch_and_mark_processed=false)`，不为制作物料默认把反馈标为已处理。
 
 ## 2. 图片参数
 
-- 普通新图/编辑默认 `model="default"`。仅用户明确指定后端时用 `nanobanana` / `gpt` / `image3`；不要把旧项目使用过 gpt 当成新项目指定。
+- 普通新图/编辑默认 `model="default"`。仅用户明确指定后端时用当前枚举中的 `nanobanana` / `gpt` / `image3` / `seedream` 等；不要把旧项目使用过gpt当成新项目指定。当前Seedream总输入最多10张（编辑原图计1张）、最高2K并忽略部分质量/seed选项，以实际工具为准。
 - `aspect_ratio` 决定构图形状，`target_size="1920x1080"` 等是必填最终像素；`resolution` 是生成分辨率，不能拿来代替最终像素。
 - `reference_images` 支持项目路径/适用 data URL 等，按工具具体 schema；每张本地或 data URL 参考 ≤10MiB。
 - 新图最多14张参考；编辑为原图加最多13张额外参考。Image3 总输入最多3张（编辑原图计1张），不要把不同模型限额混用。
@@ -32,10 +36,9 @@
 - `quality` 依具体模型和后端，不承诺所有路由都支持同样等级；保留返回的实际模型信息。
 - `transparent=true` 用于确实需要透明底的 Logo/切图；商店 Icon 与完整主视觉通常不能因此交透明底。透明输出要检查实际 alpha，不只看棋盘预览。
 
-可执行参数模板（方括号需替换为已核验值，不原样提交）：
+核心字段模板（先按当前schema适配；方括号需替换，不原样提交）：
 ```json
 {
-  "target_dir": "[唯一Maker项目绝对根]",
   "name": "game_brand_hero_landscape",
   "model": "default",
   "prompt": "[用途、参考职责、主体、画风、构图、留白、允许/禁止变化]",
@@ -77,7 +80,6 @@
 ```json
 {
   "action": "start",
-  "target_dir": "[唯一Maker项目绝对根]",
   "payload": {
     "generation_strategy": "reviewed",
     "quality_tier": "balanced",
@@ -91,11 +93,11 @@
 - 记录 asset_id、task_id、step_id；query 查状态，get_options 查实际步骤选项。
 - **所有返回审核预览展示给用户；本人明确批准之后才能 continue**，不自动填 confirm=true，不擅自开始最终模型生成。
 - post_process 的 operation 为 rig / texture / retopology / convert。convert 明确格式；rig 先查可绑性。当前不支持 Tripo 动画重定向，不作可交付承诺。
-- 使用 `local_delivery` 等返回路径；核对模型、贴图、材质、格式、比例和实际引擎导入需求。模型生成成功不等于已能在游戏里正确运行。
+- 使用实际返回的 `model.workspace_path`、`model_files`、`local_delivery` 或其他正式路径；服务器端可能已交付项目可用MDL包，不要再自动转换。核对模型、贴图、材质、格式、比例和实际引擎导入需求。模型生成成功不等于已能在游戏里正确运行。
 
 ## 5. 本地投递、映射与故障分类
 
-MCP 素材保留在经核验的 Maker 根目录：`assets/image`、`assets/video`、`assets/audio`、`assets/model`，映射以 `.maker/assets/generated-assets.json` 及实际返回为准。只输出不含凭证的路径/ID，不复制 `.maker-mcp/config.json`、登录文件或 Cookie 进交付包。
+MCP素材按工具返回保存在已核验项目，如 `assets/image`、`assets/video`、`assets/audio`、`assets/model`。映射文件仅在当前运行时存在时读取（某些部署为 `.maker/assets/generated-assets.json`），不能要求所有环境都有该路径。只输出不含凭证的路径/ID，不复制登录配置、Cookie或密钥进交付包。聊天展示媒体按当前宿主URI规则；Maker工作区使用 `workspace://assets/...`，不是机器绝对路径。
 
 其他引擎需要引用时保留 Maker 原件，再在用户允许的目标范围复制/转换；不能挪走原件破坏后续编辑映射。纯宣发交付也不靠修改引擎文件“让生成生效”。
 
