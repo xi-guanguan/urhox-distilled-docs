@@ -27,6 +27,7 @@ TapTap Maker / UrhoX 引擎社区知识蒸馏库。
 - [未标注：TapTap 单机客户端云存档修复与迁移指南](02-cloud-and-storage/未标注-TapTap单机客户端云存档修复与迁移指南.md) — 身份与昵称隔离、异步深快照、未知写恢复、两银行 journal 与真实验收边界（L2）
 
 - [xi-guanguan：TapTap全品类物料生成Skill](08-ai-workflow/xi-guanguan-TapTap全品类物料生成Skill.md) — Maker优先的整套物料流程；本轮补强获准本地后期、AI＋实机宣传片/纯实机双轨、逐张逐镜验收与草稿回读；单页全文与[综合Skill](08-ai-workflow/taptap-material-production/SKILL.md)、[双视频Skill](08-ai-workflow/taptap-gameplay-video/SKILL.md)同步（L2）
+  - [素材增强 Skill](08-ai-workflow/taptap-material-enhancement/SKILL.md) · [公开素材参考](08-ai-workflow/taptap-material-enhancement/references/visual-cases.md)：参考职责、复用与重构、成品对照和跨题材迁移。
 
 - [节拍前夜：移动平台检测与响应式适配方法论](05-ui-and-interaction/节拍前夜-移动平台检测与响应式适配方法论.md) — 平台身份、布局模式、输入能力分离，含缓存生命周期与实机验证矩阵（L2）
 

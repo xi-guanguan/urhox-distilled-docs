@@ -1,0 +1,4 @@
+interface:
+  display_name: "TapTap 素材增强"
+  short_description: "用有分工的美术参考和成品对照，诊断并修复封面、主视觉与截图包装"
+  default_prompt: "使用 $taptap-material-enhancement 检查目标槽位和已有素材，指出该复用、改图还是重构，以及如何验收。"
